@@ -1,23 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdminAuthenticated } from "@/lib/auth";
 import { deleteProductByCode, getProducts, upsertProduct } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-function checkAdmin(req: NextRequest): boolean {
-  const expected = process.env.ADMIN_PASSWORD;
-  if (!expected) return true;
-  const supplied = req.headers.get("x-admin-password") || "";
-  return supplied === expected;
-}
-
 export async function GET() {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
+  }
   const products = await getProducts();
   return NextResponse.json({ ok: true, products });
 }
 
 export async function POST(req: NextRequest) {
-  if (!checkAdmin(req)) {
-    return NextResponse.json({ ok: false, message: "รหัสผ่านแอดมินไม่ถูกต้อง" }, { status: 401 });
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ ok: false, message: "กรุณาเข้าสู่ระบบแอดมินก่อน" }, { status: 401 });
   }
   try {
     const body = await req.json();
@@ -54,8 +51,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!checkAdmin(req)) {
-    return NextResponse.json({ ok: false, message: "รหัสผ่านแอดมินไม่ถูกต้อง" }, { status: 401 });
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ ok: false, message: "กรุณาเข้าสู่ระบบแอดมินก่อน" }, { status: 401 });
   }
   try {
     const code = req.nextUrl.searchParams.get("code");

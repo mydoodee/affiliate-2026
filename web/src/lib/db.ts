@@ -30,7 +30,7 @@ export async function initAndSeedDb(): Promise<{
   if (!sql) {
     return {
       ok: false,
-      message: "ยังไม่ได้ตั้งค่า DATABASE_URL (กรุณาเชื่อมต่อ Neon PostgreSQL ใน Vercel หรือ .env.local)",
+      message: "ยังไม่ได้ตั้งค่า DATABASE_URL (กรุณาเชื่อมต่อ Neon PostgreSQL ใน Vercel Storage ก่อน)",
     };
   }
 
@@ -70,6 +70,7 @@ export async function initAndSeedDb(): Promise<{
       highlight VARCHAR(128) NOT NULL DEFAULT '',
       cta_text VARCHAR(64) NOT NULL DEFAULT 'เช็กราคาเลย',
       affiliate_url TEXT NOT NULL,
+      logo_url TEXT NOT NULL DEFAULT '',
       icon_key VARCHAR(32) NOT NULL DEFAULT 'hotel',
       clicks INTEGER NOT NULL DEFAULT 0,
       sort_order INTEGER NOT NULL DEFAULT 100,
@@ -77,6 +78,8 @@ export async function initAndSeedDb(): Promise<{
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+
+  await sql`ALTER TABLE travel_deals ADD COLUMN IF NOT EXISTS logo_url TEXT NOT NULL DEFAULT ''`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS click_logs (
@@ -106,12 +109,13 @@ export async function initAndSeedDb(): Promise<{
   for (const t of SEED_TRAVEL_DEALS) {
     await sql`
       INSERT INTO travel_deals (
-        code, title, description, category, highlight, cta_text, affiliate_url, icon_key, sort_order
+        code, title, description, category, highlight, cta_text, affiliate_url, logo_url, icon_key, sort_order
       ) VALUES (
         ${t.code}, ${t.title}, ${t.description}, ${t.category}, ${t.highlight},
-        ${t.cta_text}, ${t.affiliate_url}, ${t.icon_key}, ${t.sort_order}
+        ${t.cta_text}, ${t.affiliate_url}, ${t.logo_url}, ${t.icon_key}, ${t.sort_order}
       )
-      ON CONFLICT (code) DO NOTHING
+      ON CONFLICT (code) DO UPDATE SET
+        logo_url = CASE WHEN travel_deals.logo_url = '' THEN EXCLUDED.logo_url ELSE travel_deals.logo_url END
     `;
   }
 
@@ -169,7 +173,7 @@ export async function getTravelDeals(): Promise<TravelDeal[]> {
   try {
     const rows = await sql`
       SELECT id, code, title, description, category, highlight, cta_text, affiliate_url,
-             icon_key, clicks, sort_order, is_active
+             logo_url, icon_key, clicks, sort_order, is_active
       FROM travel_deals
       WHERE is_active = TRUE
       ORDER BY sort_order ASC, id ASC
@@ -188,7 +192,7 @@ export async function getTravelDealByCode(code: string): Promise<TravelDeal | nu
     try {
       const rows = await sql`
         SELECT id, code, title, description, category, highlight, cta_text, affiliate_url,
-               icon_key, clicks, sort_order, is_active
+               logo_url, icon_key, clicks, sort_order, is_active
         FROM travel_deals
         WHERE UPPER(code) = ${clean}
         LIMIT 1
@@ -224,13 +228,15 @@ export async function recordClick(
       await sql`UPDATE travel_deals SET clicks = clicks + 1 WHERE UPPER(code) = ${code.toUpperCase()}`;
     }
   } catch {
-    // Non-blocking: never break user redirect
+    // Non-blocking
   }
 }
 
-export async function upsertProduct(p: Omit<Product, "id" | "clicks_shopee" | "clicks_lazada">): Promise<void> {
+export async function upsertProduct(
+  p: Omit<Product, "id" | "clicks_shopee" | "clicks_lazada">
+): Promise<void> {
   const sql = getSql();
-  if (!sql) throw new Error("DATABASE_URL is not configured");
+  if (!sql) throw new Error("ยังไม่ได้เชื่อม Neon PostgreSQL (DATABASE_URL)");
   await sql`
     INSERT INTO products (
       code, title, description, price_display, price_num, sold_text, sold_num,
@@ -261,8 +267,39 @@ export async function upsertProduct(p: Omit<Product, "id" | "clicks_shopee" | "c
 
 export async function deleteProductByCode(code: string): Promise<void> {
   const sql = getSql();
-  if (!sql) throw new Error("DATABASE_URL is not configured");
+  if (!sql) throw new Error("ยังไม่ได้เชื่อม Neon PostgreSQL (DATABASE_URL)");
   await sql`DELETE FROM products WHERE code = ${code}`;
+}
+
+export async function upsertTravelDeal(
+  t: Omit<TravelDeal, "id" | "clicks">
+): Promise<void> {
+  const sql = getSql();
+  if (!sql) throw new Error("ยังไม่ได้เชื่อม Neon PostgreSQL (DATABASE_URL)");
+  await sql`
+    INSERT INTO travel_deals (
+      code, title, description, category, highlight, cta_text, affiliate_url, logo_url, icon_key, sort_order
+    ) VALUES (
+      ${t.code}, ${t.title}, ${t.description}, ${t.category}, ${t.highlight},
+      ${t.cta_text}, ${t.affiliate_url}, ${t.logo_url}, ${t.icon_key}, ${t.sort_order}
+    )
+    ON CONFLICT (code) DO UPDATE SET
+      title = EXCLUDED.title,
+      description = EXCLUDED.description,
+      category = EXCLUDED.category,
+      highlight = EXCLUDED.highlight,
+      cta_text = EXCLUDED.cta_text,
+      affiliate_url = EXCLUDED.affiliate_url,
+      logo_url = CASE WHEN EXCLUDED.logo_url <> '' THEN EXCLUDED.logo_url ELSE travel_deals.logo_url END,
+      icon_key = EXCLUDED.icon_key,
+      sort_order = EXCLUDED.sort_order
+  `;
+}
+
+export async function deleteTravelDealByCode(code: string): Promise<void> {
+  const sql = getSql();
+  if (!sql) throw new Error("ยังไม่ได้เชื่อม Neon PostgreSQL (DATABASE_URL)");
+  await sql`DELETE FROM travel_deals WHERE UPPER(code) = ${code.toUpperCase()}`;
 }
 
 export async function getClickStats(): Promise<ClickStats> {

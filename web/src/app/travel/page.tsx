@@ -75,9 +75,18 @@ export default async function TravelPage() {
               className="group flex flex-col justify-between rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-200 hover:shadow-md"
             >
               <div>
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-orange-100 bg-[#fff4f0]">
-                    <DealIcon iconKey={deal.icon_key} />
+                <div className="mb-4 flex items-center gap-3.5">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-1.5 shadow-xs">
+                    {deal.logo_url ? (
+                      <img
+                        src={deal.logo_url}
+                        alt={deal.title}
+                        loading="lazy"
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <DealIcon iconKey={deal.icon_key} />
+                    )}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">

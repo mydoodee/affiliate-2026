@@ -29,6 +29,7 @@ export interface TravelDeal {
   highlight: string;
   cta_text: string;
   affiliate_url: string;
+  logo_url: string;
   icon_key: "hotel" | "plane" | "esim" | "shield" | "car" | "card" | string;
   clicks: number;
   sort_order: number;

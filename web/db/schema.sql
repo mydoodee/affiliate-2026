@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS travel_deals (
   highlight VARCHAR(128) NOT NULL DEFAULT '',
   cta_text VARCHAR(64) NOT NULL DEFAULT 'เช็กราคาเลย',
   affiliate_url TEXT NOT NULL,
+  logo_url TEXT NOT NULL DEFAULT '',
   icon_key VARCHAR(32) NOT NULL DEFAULT 'hotel',
   clicks INTEGER NOT NULL DEFAULT 0,
   sort_order INTEGER NOT NULL DEFAULT 100,
