@@ -1,0 +1,10 @@
+Slot,Campaign_ID,Campaign_Name,Status,Commission_Rate,Affiliate_Short_Link
+T01,535,"Trip.com",Approved,"Up to 3.5% (Hotel/Car 3.5%)",https://atth.me/001jzw002b8u
+T02,656,"Traveloka",Approved,"Up to 13% (eSIM 13%, Car 4.7%, Hotel 3.15%)",https://atth.me/003v5v002b8u
+T03,945,"Airalo eSIM",Approved,"10.5% Flat",https://atth.me/00d74u002b8u
+T04,131,"MSIG Travel Easy Plus",Approved,"12.6%",https://atth.me/000bqk002b8u
+T05,962,"SCB protect ประกันเดินทาง",Approved,"Up to 10.5%",https://atth.me/00db8m002b8u
+T06,971,"SCB protect ประกันรถยนต์",Approved,"5.6%-10.5% (~1,500-2,600 THB/policy)",https://atth.me/00dhxh002b8u
+T07,958,"Krungsri Lady Titanium Credit Card",Approved,"1,050 THB / approved card",https://atth.me/00dayn002b8u
+Pending1,1059,"Gother",Pending,"Up to 5.6% (Hotel 5.6%)",
+Pending2,1029,"Klook",Pending,"3.33% (Up to 3.5%)",
