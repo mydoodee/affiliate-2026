@@ -1,0 +1,20 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: EndHeader,Leelawadee UI,60,&H00FFFFFF,&H00FFFFFF,&H001A2A55,&H00000000,-1,0,0,0,100,100,0,0,1,4,2,8,60,60,210,1
+Style: PriceBig,Leelawadee UI,78,&H00234EF0,&H00234EF0,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,0,1
+Style: SubDark,Leelawadee UI,44,&H00222222,&H00222222,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,0,1
+Style: CtaWhite,Leelawadee UI,46,&H00FFFFFF,&H00FFFFFF,&H00112266,&H00000000,-1,0,0,0,100,100,0,0,1,2,1,5,60,60,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 2,0:00:00.00,0:00:03.80,EndHeader,,0,0,0,,Seagull เครื่องทำน้ำเต้าหู้ 1.2L\N{\c&H00AAEEFF&}รุ่น 8 in 1 (สีครีม)
+Dialogue: 3,0:00:00.00,0:00:03.80,PriceBig,,0,0,0,,{\pos(540,1220)}฿1,287 {\fs42\c&H00444444&}| ★ 4.9 (ขายแล้ว 30k+)
+Dialogue: 1,0:00:00.00,0:00:03.80,SubDark,,0,0,0,,{\pos(540,1375)}แบรนด์นกนางนวลแท้ • ทำน้ำเต้าหู้ โจ๊ก ซุป จบในเครื่องเดียว
+Dialogue: 3,0:00:00.00,0:00:03.80,CtaWhite,,0,0,0,,{\pos(540,1520)}กดตะกร้า / ลิงก์หน้าโปรไฟล์ เบอร์ #05

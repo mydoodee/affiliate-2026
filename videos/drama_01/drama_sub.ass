@@ -1,0 +1,35 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: TopHook,Leelawadee UI,62,&H00FFFFFF,&H00FFFFFF,&H00121212,&H90000000,-1,0,0,0,100,100,0,0,1,6,3,8,60,60,235,1
+Style: SubHusband,Leelawadee UI,54,&H00FFFFFF,&H00FFFFFF,&H00101010,&HB0000000,-1,0,0,0,100,100,0,0,1,5,3,2,60,60,395,1
+Style: SubWife,Leelawadee UI,54,&H00FFFFFF,&H00FFFFFF,&H00101010,&HB0000000,-1,0,0,0,100,100,0,0,1,5,3,2,60,60,395,1
+Style: EndHeader,Leelawadee UI,60,&H00FFFFFF,&H00FFFFFF,&H001A2A55,&H00000000,-1,0,0,0,100,100,0,0,1,4,2,8,60,60,210,1
+Style: PriceBig,Leelawadee UI,78,&H00234EF0,&H00234EF0,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,0,1
+Style: SubDark,Leelawadee UI,44,&H00222222,&H00222222,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,0,1
+Style: CtaWhite,Leelawadee UI,46,&H00FFFFFF,&H00FFFFFF,&H00112266,&H00000000,-1,0,0,0,100,100,0,0,1,2,1,5,60,60,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 2,0:00:00.00,0:00:05.34,TopHook,,0,0,0,,{\c&H00D4FF&}น้ำเต้าหู้ปากซอยคิวยาว{\c&H00FFFFFF&}\Nแถมหวานตัดขา?!
+Dialogue: 1,0:00:00.08,0:00:02.50,SubHusband,,0,0,0,,{\c&H0055D8FF&}[สามี] {\c&H00FFFFFF&}โอ๊ย สายแล้วเนี่ย!\Nจะแวะซื้อน้ำเต้าหู้ปากซอย
+Dialogue: 1,0:00:02.50,0:00:05.34,SubHusband,,0,0,0,,{\c&H0055D8FF&}[สามี] {\c&H00FFFFFF&}คิวก็ยาวเป็นหางว่าว\Nแถม{\c&H0055D8FF&}หวานตัดขาอีก!
+Dialogue: 2,0:00:05.19,0:00:13.50,TopHook,,0,0,0,,{\c&H0099CCFF&}เลิกต่อคิวได้แล้ว!{\c&H00FFFFFF&}\Nใส่ถั่ว+น้ำ กดปุ่มเดียวจบ
+Dialogue: 1,0:00:05.27,0:00:08.39,SubWife,,0,0,0,,{\c&H0099B8FF&}[ภรรยา] {\c&H00FFFFFF&}เลิกต่อคิวได้แล้วพ่อคุณ!
+Dialogue: 1,0:00:08.39,0:00:13.50,SubWife,,0,0,0,,{\c&H0099B8FF&}[ภรรยา] {\c&H00FFFFFF&}แค่ใส่ถั่วเหลือง+น้ำเปล่า\Nลงเครื่อง Seagull {\c&H0055D8FF&}กดปุ่มเดียวจบ!
+Dialogue: 2,0:00:13.35,0:00:22.39,TopHook,,0,0,0,,{\c&H00D4FF&}ทั้งปั่นทั้งต้มอัตโนมัติ{\c&H00FFFFFF&}\Nทำได้ตั้ง 8 เมนู!
+Dialogue: 1,0:00:13.43,0:00:18.10,SubWife,,0,0,0,,{\c&H0099B8FF&}[ภรรยา] {\c&H00FFFFFF&}ทั้งปั่นทั้งต้มให้เอง\N{\c&H0055D8FF&}เนื้อเนียนนุ่มไม่ต้องกรองกาก
+Dialogue: 1,0:00:18.10,0:00:22.39,SubWife,,0,0,0,,{\c&H0099B8FF&}[ภรรยา] {\c&H00FFFFFF&}ทำได้ตั้ง {\c&H0055D8FF&}8 เมนู{\c&H00FFFFFF&}\Nทั้งโจ๊ก ทั้งซุปข้าวโพดเลยนะ!
+Dialogue: 2,0:00:22.24,0:00:28.18,TopHook,,0,0,0,,{\c&H00D4FF&}หอมเนียนกว่าเจ้าดัง!{\c&H00FFFFFF&}\Nคุมหวานได้ + ประหยัดเยอะ
+Dialogue: 1,0:00:22.32,0:00:25.14,SubHusband,,0,0,0,,{\c&H0055D8FF&}[สามี] {\c&H00FFFFFF&}เฮ้ย! หอมมันเนียนกว่า\N{\c&H0055D8FF&}เจ้าดังปากซอยอีก!
+Dialogue: 1,0:00:25.14,0:00:28.18,SubHusband,,0,0,0,,{\c&H0055D8FF&}[สามี] {\c&H00FFFFFF&}ทำกินเองคุมหวานได้\Nแถม{\c&H0055D8FF&}ประหยัดไปตั้งเยอะ!
+Dialogue: 2,0:00:28.03,0:00:35.91,EndHeader,,0,0,0,,Seagull เครื่องทำน้ำเต้าหู้ 1.2L\N{\c&H00AAEEFF&}รุ่น 8 in 1 (สีครีม)
+Dialogue: 3,0:00:28.08,0:00:35.91,PriceBig,,0,0,0,,{\pos(540,1220)}฿1,287 {\fs42\c&H00444444&}| ★ 4.9 (ขายแล้ว 30k+)
+Dialogue: 1,0:00:28.13,0:00:35.91,SubDark,,0,0,0,,{\pos(540,1375)}แบรนด์นกนางนวลแท้ • ทำน้ำเต้าหู้ โจ๊ก ซุป จบในเครื่องเดียว
+Dialogue: 3,0:00:28.13,0:00:35.91,CtaWhite,,0,0,0,,{\pos(540,1520)}กดตะกร้า / ลิงก์หน้าโปรไฟล์ เบอร์ #05

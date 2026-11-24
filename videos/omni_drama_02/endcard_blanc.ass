@@ -1,0 +1,20 @@
+﻿[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: EndHeader,Leelawadee UI,64,&H00FFFFFF,&H00FFFFFF,&H00182448,&H00000000,-1,0,0,0,100,100,0,0,1,4,2,8,60,60,185,1
+Style: BrandBig,Leelawadee UI,54,&H00234EF0,&H00234EF0,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,0,1
+Style: SubDark,Leelawadee UI,40,&H00333333,&H00333333,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,0,1
+Style: TagWhite,Leelawadee UI,44,&H00FFFFFF,&H00FFFFFF,&H00112266,&H00000000,-1,0,0,0,100,100,0,0,1,2,1,5,60,60,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 2,0:00:00.00,0:00:03.50,EndHeader,,0,0,0,,อู่ซ่อมรถ...\N{\c&H00BBEEFF&}แต่ช่างซ่อมหน้า!
+Dialogue: 3,0:00:00.00,0:00:03.50,BrandBig,,0,0,0,,{\pos(540,1300)}Blanc Nature Pore Ampoule
+Dialogue: 1,0:00:00.00,0:00:03.50,SubDark,,0,0,0,,{\pos(540,1372)}15% Niacinamide • กระชับรูขุมขน คุมมัน (★ 4.9)
+Dialogue: 3,0:00:00.00,0:00:03.50,TagWhite,,0,0,0,,{\pos(540,1585)}ของแท้ขายดี 40,000+ ขวด • เบอร์ #09
