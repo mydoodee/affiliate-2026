@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getProducts } from "@/lib/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://mybabman-picks.vercel.app";
+  const baseUrl = "https://app.growkub.com";
   const products = await getProducts();
 
   return [

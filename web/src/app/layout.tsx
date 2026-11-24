@@ -10,6 +10,7 @@ const ibmPlexThai = IBM_Plex_Sans_Thai({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://app.growkub.com"),
   title: {
     default: "Babman Picks • คัดสินค้าขายดี Shopee & Lazada และดีลเที่ยวปีใหม่ 2027",
     template: "%s | Babman Picks",
@@ -17,6 +18,8 @@ export const metadata: Metadata = {
   description:
     "รวมสินค้าขายดีรีวิว 4.8–4.9 ดาวจากร้านทางการ Shopee & Lazada พร้อมศูนย์รวมดีลจองที่พัก ตั๋วเครื่องบิน eSIM และประกันออนไลน์",
   openGraph: {
+    url: "https://app.growkub.com",
+    siteName: "Babman Picks",
     title: "Babman Picks • พิกัดของดีใช้จริง & ดีลเที่ยวปีใหม่ 2027",
     description:
       "เลือกช้อปสินค้าแนะนำตามเบอร์ #01–#10 เทียบราคา Shopee & Lazada และเช็กดีลเที่ยวปีใหม่จากค่ายทางการ",

@@ -2,8 +2,9 @@
 
 โปรเจกต์รวมระบบ Affiliate Multi-Platform (**Shopee • Lazada • TikTok Shop • ACCESSTRADE Thailand**) พร้อมหน้าร้านออนไลน์และเครื่องมือผลิตคลิปแนวตั้ง `9:16`
 
-- **Live Storefront**: https://mybabman-picks.vercel.app
-- **New Year Travel & Insurance Hub**: https://mybabman-picks.vercel.app/#travel
+- **Live Storefront (Custom Domain)**: https://app.growkub.com
+- **New Year Travel & Insurance Hub**: https://app.growkub.com/travel
+- **Admin Dashboard**: https://app.growkub.com/admin
 
 ## โครงสร้างไฟล์หลัก
 - `index.html` & `public_store/index.html` — เว็บหน้าร้านรวมสินค้า Shopee/Lazada (`#01–#10`) และดีลท่องเที่ยว/ประกัน (`T01–T07`)

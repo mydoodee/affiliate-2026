@@ -1,6 +1,7 @@
 # บันทึกการลงคลิป & หน้าร้านออนไลน์ — ช่อง `@mydoodee` (Shopee) & `@mybabman` (TikTok)
 
-- **หน้าร้านรวมสินค้า Shopee ออนไลน์ถาวร (Bio Link)**: https://mybabman-picks.vercel.app
+- **หน้าร้านรวมสินค้า & ดีลเที่ยว (โดเมนหลัก)**: https://app.growkub.com (และ https://app.growkub.com/travel)
+- **ลิงก์สำรองเดิม (Redirect มาโดเมนหลัก)**: https://mybabman-picks.vercel.app
 - **iPhone 12 Mobile Hub (Wi-Fi ในบ้าน)**: `http://192.168.1.148:8787`
 
 | วันที่ | คลิป | สินค้า | ราคา | คอม Video | ลิงก์คลิปจริงบน Shopee Video | ลิงก์ Affiliate (`nov26trend`) |
