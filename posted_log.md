@@ -9,6 +9,7 @@
 | 23 พ.ย. 2026 | #1 | USEE S15-4G กล้องวงจรปิด 4G เลนส์คู่ | ฿351 | 15% (฿52.65) | https://sv.shopee.co.th/share-video/ssU4igJfCgAPPPgFAAAAAA== | https://s.shopee.co.th/1qdorlaqMK |
 | 23 พ.ย. 2026 | #2 | เจลกำจัดมด ANTIANT (ของแท้) | ฿89 | 20% (฿17.80) | https://th.shp.ee/ycxt11mz | https://s.shopee.co.th/AKcMzPQ9Dp |
 | 23 พ.ย. 2026 | #3 | ZINSANO เครื่องฉีดน้ำแรงดันสูง 120 บาร์ | ฿2,590 | 14% (฿362.60) | https://th.shp.ee/n2fx3841 | https://s.shopee.co.th/40iJRTvOLr |
+| 24 พ.ย. 2026 | #4 (ละครสั้น AI พูดจริง) | Seagull เครื่องทำน้ำเต้าหู้ 1.2L 8 in 1 | ฿1,287 | 10.4% (฿133.85) | https://th.shp.ee/kahka4qc | https://s.shopee.co.th/4fy0Eq7MIA |
 
 ## แผนวันถัดไป (24 พ.ย. 2026)
 - [ ] เช็กยอดวิว / ยอดคลิกตะกร้าส้มของคลิป #1–#3 ในแอป Shopee และ `affiliate.shopee.co.th`

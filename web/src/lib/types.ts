@@ -13,11 +13,14 @@ export interface Product {
   image_url: string;
   shopee_url: string;
   lazada_url: string;
+  shopee_item_id?: string;
+  lazada_item_id?: string;
   has_video: boolean;
   clicks_shopee: number;
   clicks_lazada: number;
   sort_order: number;
   is_active?: boolean;
+  last_synced_at?: string | null;
 }
 
 export interface TravelDeal {
@@ -43,4 +46,11 @@ export interface ClickStats {
   shopeeClicks: number;
   lazadaClicks: number;
   travelClicks: number;
+}
+
+export interface SyncStatusInfo {
+  shopeeConfigured: boolean;
+  lazadaConfigured: boolean;
+  lastSyncAt: string | null;
+  lastSyncMessage: string | null;
 }

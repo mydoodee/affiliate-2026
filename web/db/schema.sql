@@ -16,11 +16,14 @@ CREATE TABLE IF NOT EXISTS products (
   image_url TEXT NOT NULL DEFAULT '',
   shopee_url TEXT NOT NULL DEFAULT '',
   lazada_url TEXT NOT NULL DEFAULT '',
+  shopee_item_id VARCHAR(64) NOT NULL DEFAULT '',
+  lazada_item_id VARCHAR(64) NOT NULL DEFAULT '',
   has_video BOOLEAN NOT NULL DEFAULT FALSE,
   clicks_shopee INTEGER NOT NULL DEFAULT 0,
   clicks_lazada INTEGER NOT NULL DEFAULT 0,
   sort_order INTEGER NOT NULL DEFAULT 100,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  last_synced_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -55,3 +58,14 @@ CREATE TABLE IF NOT EXISTS click_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_click_logs_created ON click_logs(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS sync_logs (
+  id SERIAL PRIMARY KEY,
+  source VARCHAR(32) NOT NULL,
+  status VARCHAR(24) NOT NULL,
+  updated_count INTEGER NOT NULL DEFAULT 0,
+  message TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sync_logs_created ON sync_logs(created_at DESC);

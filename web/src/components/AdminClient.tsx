@@ -11,11 +11,12 @@ import {
   Pencil,
   Plane,
   Plus,
+  RefreshCw,
   ShoppingBag,
   Trash2,
   Upload,
 } from "lucide-react";
-import type { ClickStats, Product, TravelDeal } from "@/lib/types";
+import type { ClickStats, Product, SyncStatusInfo, TravelDeal } from "@/lib/types";
 
 function compressImageToDataUrl(file: File, maxDim = 512): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -51,14 +52,17 @@ export function AdminClient({
   initialStats,
   initialProducts,
   initialTravelDeals,
+  initialSyncStatus,
 }: {
   initialAuthed: boolean;
   initialStats: ClickStats;
   initialProducts: Product[];
   initialTravelDeals: TravelDeal[];
+  initialSyncStatus: SyncStatusInfo;
 }) {
   const router = useRouter();
   const [authed, setAuthed] = useState(initialAuthed);
+  const [syncStatus, setSyncStatus] = useState<SyncStatusInfo>(initialSyncStatus);
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -201,6 +205,27 @@ export function AdminClient({
         </div>
       </div>
     );
+  }
+
+  async function runSyncNow() {
+    setLoading(true);
+    setStatusMsg("");
+    try {
+      const res = await fetch("/api/admin/sync", { method: "POST" });
+      const data = await res.json();
+      setStatusMsg(data.message || (data.ok ? "ซิงค์สำเร็จ" : "เกิดข้อผิดพลาด"));
+      const [sRes, pRes] = await Promise.all([
+        fetch("/api/admin/sync"),
+        fetch("/api/admin/products"),
+      ]);
+      const sData = await sRes.json();
+      const pData = await pRes.json();
+      if (sData.status) setSyncStatus(sData.status);
+      if (pData.products) setProducts(pData.products);
+      router.refresh();
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function initDb() {
@@ -456,6 +481,15 @@ export function AdminClient({
             </span>
             <button
               type="button"
+              onClick={runSyncNow}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-[#fff4f0] px-3.5 py-2 text-xs font-semibold text-[#f04e23] hover:bg-orange-100 disabled:opacity-50 cursor-pointer"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              ซิงค์ราคาล่าสุด
+            </button>
+            <button
+              type="button"
               onClick={initDb}
               disabled={loading}
               className="rounded-xl bg-[#f04e23] px-3.5 py-2 text-xs font-semibold text-white hover:bg-[#d93f16] disabled:opacity-50 cursor-pointer"
@@ -501,6 +535,36 @@ export function AdminClient({
               {initialStats.travelClicks}
             </div>
           </div>
+        </div>
+
+        {/* Auto-Sync API Status Strip */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-neutral-100 bg-[#faf9f7] px-4 py-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-neutral-700">Auto-Sync ทุกวัน 06:00 น.:</span>
+            <span
+              className={`rounded-full px-2.5 py-0.5 font-semibold ${
+                syncStatus.lazadaConfigured
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-amber-50 text-amber-700"
+              }`}
+            >
+              Lazada API: {syncStatus.lazadaConfigured ? "พร้อมซิงค์" : "รออนุมัติคีย์"}
+            </span>
+            <span
+              className={`rounded-full px-2.5 py-0.5 font-semibold ${
+                syncStatus.shopeeConfigured
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-amber-50 text-amber-700"
+              }`}
+            >
+              Shopee API: {syncStatus.shopeeConfigured ? "พร้อมซิงค์" : "รอปลดล็อกสิทธิ์"}
+            </span>
+          </div>
+          {syncStatus.lastSyncMessage && (
+            <span className="text-[11px] text-neutral-500 truncate max-w-md">
+              ล่าสุด: {syncStatus.lastSyncMessage}
+            </span>
+          )}
         </div>
 
         {statusMsg && (

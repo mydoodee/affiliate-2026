@@ -60,6 +60,10 @@ export async function initAndSeedDb(): Promise<{
     )
   `;
 
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS shopee_item_id VARCHAR(64) NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS lazada_item_id VARCHAR(64) NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS last_synced_at TIMESTAMPTZ`;
+
   await sql`
     CREATE TABLE IF NOT EXISTS travel_deals (
       id SERIAL PRIMARY KEY,
@@ -92,17 +96,33 @@ export async function initAndSeedDb(): Promise<{
     )
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS sync_logs (
+      id SERIAL PRIMARY KEY,
+      source VARCHAR(32) NOT NULL,
+      status VARCHAR(24) NOT NULL,
+      updated_count INTEGER NOT NULL DEFAULT 0,
+      message TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+
   for (const p of SEED_PRODUCTS) {
     await sql`
       INSERT INTO products (
         code, title, description, price_display, price_num, sold_text, sold_num,
-        rating, category, badge, image_url, shopee_url, lazada_url, has_video, sort_order
+        rating, category, badge, image_url, shopee_url, lazada_url,
+        shopee_item_id, lazada_item_id, has_video, sort_order
       ) VALUES (
         ${p.code}, ${p.title}, ${p.description}, ${p.price_display}, ${p.price_num},
         ${p.sold_text}, ${p.sold_num}, ${p.rating}, ${p.category}, ${p.badge},
-        ${p.image_url}, ${p.shopee_url}, ${p.lazada_url}, ${p.has_video}, ${p.sort_order}
+        ${p.image_url}, ${p.shopee_url}, ${p.lazada_url},
+        ${p.shopee_item_id ?? ""}, ${p.lazada_item_id ?? ""}, ${p.has_video}, ${p.sort_order}
       )
-      ON CONFLICT (code) DO NOTHING
+      ON CONFLICT (code) DO UPDATE SET
+        shopee_item_id = CASE WHEN products.shopee_item_id = '' THEN EXCLUDED.shopee_item_id ELSE products.shopee_item_id END,
+        lazada_item_id = CASE WHEN products.lazada_item_id = '' THEN EXCLUDED.lazada_item_id ELSE products.lazada_item_id END,
+        has_video = products.has_video OR EXCLUDED.has_video
     `;
   }
 
@@ -133,8 +153,9 @@ export async function getProducts(): Promise<Product[]> {
   try {
     const rows = await sql`
       SELECT id, code, title, description, price_display, price_num, sold_text, sold_num,
-             rating, category, badge, image_url, shopee_url, lazada_url, has_video,
-             clicks_shopee, clicks_lazada, sort_order, is_active
+             rating, category, badge, image_url, shopee_url, lazada_url,
+             shopee_item_id, lazada_item_id, has_video,
+             clicks_shopee, clicks_lazada, sort_order, is_active, last_synced_at
       FROM products
       WHERE is_active = TRUE
       ORDER BY sort_order ASC, id ASC
@@ -153,8 +174,9 @@ export async function getProductByCode(code: string): Promise<Product | null> {
     try {
       const rows = await sql`
         SELECT id, code, title, description, price_display, price_num, sold_text, sold_num,
-               rating, category, badge, image_url, shopee_url, lazada_url, has_video,
-               clicks_shopee, clicks_lazada, sort_order, is_active
+               rating, category, badge, image_url, shopee_url, lazada_url,
+               shopee_item_id, lazada_item_id, has_video,
+               clicks_shopee, clicks_lazada, sort_order, is_active, last_synced_at
         FROM products
         WHERE code = ${clean}
         LIMIT 1
@@ -240,11 +262,13 @@ export async function upsertProduct(
   await sql`
     INSERT INTO products (
       code, title, description, price_display, price_num, sold_text, sold_num,
-      rating, category, badge, image_url, shopee_url, lazada_url, has_video, sort_order
+      rating, category, badge, image_url, shopee_url, lazada_url,
+      shopee_item_id, lazada_item_id, has_video, sort_order
     ) VALUES (
       ${p.code}, ${p.title}, ${p.description}, ${p.price_display}, ${p.price_num},
       ${p.sold_text}, ${p.sold_num}, ${p.rating}, ${p.category}, ${p.badge},
-      ${p.image_url}, ${p.shopee_url}, ${p.lazada_url}, ${p.has_video}, ${p.sort_order}
+      ${p.image_url}, ${p.shopee_url}, ${p.lazada_url},
+      ${p.shopee_item_id ?? ""}, ${p.lazada_item_id ?? ""}, ${p.has_video}, ${p.sort_order}
     )
     ON CONFLICT (code) DO UPDATE SET
       title = EXCLUDED.title,
@@ -259,6 +283,8 @@ export async function upsertProduct(
       image_url = CASE WHEN EXCLUDED.image_url <> '' THEN EXCLUDED.image_url ELSE products.image_url END,
       shopee_url = CASE WHEN EXCLUDED.shopee_url <> '' THEN EXCLUDED.shopee_url ELSE products.shopee_url END,
       lazada_url = CASE WHEN EXCLUDED.lazada_url <> '' THEN EXCLUDED.lazada_url ELSE products.lazada_url END,
+      shopee_item_id = CASE WHEN EXCLUDED.shopee_item_id <> '' THEN EXCLUDED.shopee_item_id ELSE products.shopee_item_id END,
+      lazada_item_id = CASE WHEN EXCLUDED.lazada_item_id <> '' THEN EXCLUDED.lazada_item_id ELSE products.lazada_item_id END,
       has_video = EXCLUDED.has_video,
       sort_order = EXCLUDED.sort_order,
       updated_at = NOW()

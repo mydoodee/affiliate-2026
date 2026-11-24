@@ -3,13 +3,19 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { getClickStats, getProducts, getTravelDeals } from "@/lib/db";
+import { getSyncStatus } from "@/lib/sync";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const authed = await isAdminAuthenticated();
-  const [stats, products, travelDeals] = authed
-    ? await Promise.all([getClickStats(), getProducts(), getTravelDeals()])
+  const [stats, products, travelDeals, syncStatus] = authed
+    ? await Promise.all([
+        getClickStats(),
+        getProducts(),
+        getTravelDeals(),
+        getSyncStatus(),
+      ])
     : [
         {
           connected: false,
@@ -21,6 +27,12 @@ export default async function AdminPage() {
         },
         [],
         [],
+        {
+          shopeeConfigured: false,
+          lazadaConfigured: false,
+          lastSyncAt: null,
+          lastSyncMessage: null,
+        },
       ];
 
   return (
@@ -32,6 +44,7 @@ export default async function AdminPage() {
           initialStats={stats}
           initialProducts={products}
           initialTravelDeals={travelDeals}
+          initialSyncStatus={syncStatus}
         />
       </main>
       <Footer />
