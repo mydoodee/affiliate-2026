@@ -17,9 +17,13 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f04e23] text-xs font-bold text-white">
-              BM
-            </div>
+            <img
+              src="/logo.svg"
+              alt="Babman Picks Logo"
+              width={34}
+              height={34}
+              className="h-8.5 w-8.5 rounded-lg shadow-xs"
+            />
             <div>
               <div className="flex items-center gap-1 text-sm font-bold text-neutral-900">
                 Babman Picks

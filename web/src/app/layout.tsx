@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai } from "next/font/google";
+import { Sarabun } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexThai = IBM_Plex_Sans_Thai({
-  weight: ["400", "500", "600", "700"],
+const sarabun = Sarabun({
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["thai", "latin"],
-  variable: "--font-ibm-thai",
+  variable: "--font-sarabun",
   display: "swap",
 });
 
@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     title: "Babman Picks • พิกัดของดีใช้จริง & ดีลเที่ยวปีใหม่ 2027",
     description:
       "เลือกช้อปสินค้าแนะนำตามเบอร์ #01–#10 เทียบราคา Shopee & Lazada และเช็กดีลเที่ยวปีใหม่จากค่ายทางการ",
+    images: [{ url: "/logo.png", width: 512, height: 512, alt: "Babman Picks Logo" }],
     type: "website",
     locale: "th_TH",
   },
@@ -32,7 +33,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="th" className={`${ibmPlexThai.variable} h-full antialiased`}>
+    <html lang="th" className={`${sarabun.variable} h-full antialiased`}>
       <body className="min-h-full bg-[#faf9f7] text-[#171717] font-sans selection:bg-orange-100 selection:text-orange-900">
         {children}
       </body>

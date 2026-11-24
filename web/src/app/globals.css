@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-ibm-thai), "IBM Plex Sans Thai", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: var(--font-sarabun), "Sarabun", "TH Sarabun New", -apple-system, BlinkMacSystemFont, sans-serif;
   --color-brand: #f04e23;
   --color-brand-dark: #d93f16;
   --color-brand-soft: #fff4f0;
@@ -10,7 +10,7 @@
 body {
   background-color: #faf9f7;
   color: #171717;
-  font-family: var(--font-ibm-thai), "IBM Plex Sans Thai", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sarabun), "Sarabun", "TH Sarabun New", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Hide scrollbar for clean horizontal category chips on mobile */

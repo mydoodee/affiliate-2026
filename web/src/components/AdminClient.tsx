@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Database,
   ImagePlus,
-  Lock,
   LogOut,
   MousePointerClick,
   Pencil,
@@ -140,8 +139,14 @@ export function AdminClient({
     return (
       <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16">
         <div className="rounded-3xl border border-orange-100 bg-white p-7 shadow-sm">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4f0] text-[#f04e23]">
-            <Lock className="h-6 w-6" />
+          <div className="mx-auto mb-4 flex items-center justify-center">
+            <img
+              src="/logo.svg"
+              alt="Babman Picks Logo"
+              width={52}
+              height={52}
+              className="h-13 w-13 rounded-2xl shadow-sm shadow-orange-500/20"
+            />
           </div>
           <h1 className="text-center text-lg font-bold text-neutral-900">
             เข้าสู่ระบบแอดมิน Babman Picks

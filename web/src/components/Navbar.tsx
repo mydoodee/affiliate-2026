@@ -16,9 +16,13 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-neutral-200/80 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f04e23] text-sm font-bold text-white shadow-sm shadow-orange-500/25 transition-transform group-hover:scale-105">
-            BM
-          </div>
+          <img
+            src="/logo.svg"
+            alt="Babman Picks Logo"
+            width={38}
+            height={38}
+            className="h-9.5 w-9.5 rounded-xl shadow-sm shadow-orange-500/20 transition-transform group-hover:scale-105"
+          />
           <div className="leading-tight">
             <div className="flex items-center gap-1.5 text-[15px] font-bold tracking-tight text-neutral-900">
               Babman Picks
