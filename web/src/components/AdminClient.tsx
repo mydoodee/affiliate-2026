@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Trash2,
   Upload,
+  Zap,
 } from "lucide-react";
 import type { ClickStats, Product, SyncStatusInfo, TravelDeal } from "@/lib/types";
 
@@ -72,6 +73,21 @@ export function AdminClient({
   const [travelDeals, setTravelDeals] = useState<TravelDeal[]>(initialTravelDeals);
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [loading, setLoading] = useState(false);
+
+  const [lazadaBulkText, setLazadaBulkText] = useState("");
+  const [lazadaBulkBrand, setLazadaBulkBrand] = useState("");
+  const [lazadaBulkCategory, setLazadaBulkCategory] = useState("auto");
+  const [lazadaImportResults, setLazadaImportResults] = useState<
+    Array<{
+      code: string;
+      brand: string;
+      title: string;
+      lazadaPrice: number;
+      shopeePrice: number;
+      lazadaUrl: string;
+      commissionPct: number;
+    }>
+  >([]);
 
   const [form, setForm] = useState({
     code: "",
@@ -248,6 +264,37 @@ export function AdminClient({
         const tData = await tRes.json();
         if (pData.products) setProducts(pData.products);
         if (tData.deals) setTravelDeals(tData.deals);
+        router.refresh();
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleLazadaBulkImport(e: React.FormEvent) {
+    e.preventDefault();
+    if (!lazadaBulkText.trim()) return;
+    setLoading(true);
+    setStatusMsg("");
+    setLazadaImportResults([]);
+    try {
+      const res = await fetch("/api/admin/lazada-import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lines: lazadaBulkText,
+          defaultBrand: lazadaBulkBrand,
+          defaultCategory: lazadaBulkCategory,
+        }),
+      });
+      const data = await res.json();
+      setStatusMsg(data.message || (data.ok ? "นำเข้าสำเร็จ" : "นำเข้าไม่สำเร็จ"));
+      if (data.ok) {
+        setLazadaImportResults(data.imported || []);
+        setLazadaBulkText("");
+        const listRes = await fetch("/api/admin/products");
+        const listData = await listRes.json();
+        if (listData.products) setProducts(listData.products);
         router.refresh();
       }
     } finally {
@@ -610,6 +657,87 @@ export function AdminClient({
 
       {tab === "products" ? (
         <>
+          {/* Fast Lazada Open API Bulk Auto-Importer */}
+          <form
+            onSubmit={handleLazadaBulkImport}
+            className="rounded-3xl border border-indigo-100 bg-gradient-to-br from-[#f6f8ff] to-white p-5 shadow-xs sm:p-6"
+          >
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+              <div>
+                <h2 className="flex items-center gap-1.5 text-sm font-bold text-[#101d6b]">
+                  <Zap className="h-4 w-4 fill-[#101d6b]" />
+                  ดูดสินค้า Lazada ทีละหลายตัว (Auto-GetLink ผ่าน Lazada API)
+                </h2>
+                <p className="mt-0.5 text-xs text-neutral-500">
+                  วางเลข Lazada Item ID หรือ URL สินค้า (บรรทัดละ 1 ตัว) → ระบบดึงรูป แบรนด์ ราคาสด + เสกลิงก์{" "}
+                  <code className="rounded bg-indigo-50 px-1 text-[#101d6b]">s.lazada.co.th</code>{" "}
+                  ให้อัตโนมัติทันที
+                </p>
+              </div>
+              <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                รองรับทีละ 20–50 รายการ
+              </span>
+            </div>
+
+            <textarea
+              rows={4}
+              value={lazadaBulkText}
+              onChange={(e) => setLazadaBulkText(e.target.value)}
+              placeholder={`ตัวอย่างการวาง (บรรทัดละ 1 สินค้า):\n4831884381\nhttps://www.lazada.co.th/products/...-i16373052678.html\n4831884381 | https://s.shopee.co.th/xxx | 520 | Breeze | home\n#08 | 5852773665   (จับคู่เติมลิงก์ Lazada ให้สินค้าเบอร์เดิม)`}
+              className="mt-3 w-full rounded-2xl border border-indigo-200/80 bg-white p-3 font-mono text-xs text-neutral-800 outline-none placeholder:font-sans placeholder:text-neutral-400 focus:border-[#101d6b] focus:ring-4 focus:ring-indigo-500/10"
+            />
+
+            <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+              <input
+                value={lazadaBulkBrand}
+                onChange={(e) => setLazadaBulkBrand(e.target.value)}
+                placeholder="ชื่อแบรนด์ (เว้นว่างให้ดึงจาก Lazada อัตโนมัติ)"
+                className="flex-1 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs outline-none focus:border-[#101d6b]"
+              />
+              <select
+                value={lazadaBulkCategory}
+                onChange={(e) => setLazadaBulkCategory(e.target.value)}
+                className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs outline-none focus:border-[#101d6b]"
+              >
+                <option value="auto">หมวดหมู่: แยกให้อัตโนมัติ</option>
+                <option value="home">บ้าน &amp; ช่าง</option>
+                <option value="kitchen">เครื่องครัว</option>
+                <option value="beauty">บิวตี้ &amp; สุขภาพ</option>
+                <option value="cctv">กล้องวงจรปิด</option>
+                <option value="gadget">แกดเจ็ต</option>
+              </select>
+              <button
+                type="submit"
+                disabled={loading || !lazadaBulkText.trim()}
+                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#101d6b] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#0b144d] disabled:opacity-50 cursor-pointer"
+              >
+                <Zap className="h-3.5 w-3.5" />
+                {loading ? "กำลังดึงข้อมูล..." : "ดูดสินค้า + เสกลิงก์เลย"}
+              </button>
+            </div>
+
+            {lazadaImportResults.length > 0 && (
+              <div className="mt-3 space-y-1.5 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-3 text-xs">
+                <div className="font-bold text-emerald-800">
+                  นำเข้าสำเร็จ {lazadaImportResults.length} รายการ:
+                </div>
+                {lazadaImportResults.map((item) => (
+                  <div
+                    key={item.code}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-2.5 py-1.5 text-[11px]"
+                  >
+                    <span className="font-semibold text-neutral-900 truncate max-w-md">
+                      #{item.code} [{item.brand}] {item.title}
+                    </span>
+                    <span className="font-bold text-[#101d6b]">
+                      ฿{item.lazadaPrice.toLocaleString()} (คอมฯ {item.commissionPct}%)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </form>
+
           <div className="grid gap-6 lg:grid-cols-3">
             <form
               onSubmit={saveProduct}
@@ -794,10 +922,21 @@ export function AdminClient({
                       </td>
                       <td className="px-4 py-2.5 font-bold text-neutral-700">#{p.code}</td>
                       <td className="max-w-xs truncate px-4 py-2.5 font-medium text-neutral-900">
+                        {p.brand && (
+                          <span className="mr-1.5 rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-bold text-neutral-600">
+                            {p.brand}
+                          </span>
+                        )}
                         {p.title}
                       </td>
-                      <td className="px-4 py-2.5 font-semibold text-[#f04e23]">
-                        {p.price_display}
+                      <td className="px-4 py-2.5 font-semibold whitespace-nowrap">
+                        <span className="text-[#f04e23]">
+                          {p.shopee_price > 0 ? `SH ฿${p.shopee_price.toLocaleString()}` : "—"}
+                        </span>
+                        <span className="mx-1 text-neutral-300">/</span>
+                        <span className="text-[#101d6b]">
+                          {p.lazada_price > 0 ? `LZ ฿${p.lazada_price.toLocaleString()}` : "—"}
+                        </span>
                       </td>
                       <td className="px-4 py-2.5 text-neutral-500">
                         {p.clicks_shopee} / {p.clicks_lazada}
