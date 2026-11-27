@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { AdminClient } from "@/components/AdminClient";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
@@ -7,7 +8,15 @@ import { getSyncStatus } from "@/lib/sync";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export const metadata: Metadata = {
+  title: "Admin",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
+export default async function AdminKubPage() {
   const authed = await isAdminAuthenticated();
   const [stats, products, travelDeals, syncStatus] = authed
     ? await Promise.all([
