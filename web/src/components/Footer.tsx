@@ -7,6 +7,7 @@ export function Footer() {
     "Lazada",
     "Trip.com",
     "Traveloka",
+    "Klook",
     "Airalo",
     "MSIG",
     "SCB protect",
