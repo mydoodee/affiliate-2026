@@ -75,10 +75,13 @@ export function AdminClient({
 
   const [form, setForm] = useState({
     code: "",
+    brand: "",
     title: "",
     description: "",
     price_display: "",
     price_num: "",
+    shopee_price: "",
+    lazada_price: "",
     sold_text: "",
     rating: "4.9",
     category: "home",
@@ -86,6 +89,7 @@ export function AdminClient({
     image_url: "",
     shopee_url: "",
     lazada_url: "",
+    lazada_item_id: "",
     has_video: false,
   });
 
@@ -262,6 +266,8 @@ export function AdminClient({
         body: JSON.stringify({
           ...form,
           price_num: Number(form.price_num) || 0,
+          shopee_price: Number(form.shopee_price) || 0,
+          lazada_price: Number(form.lazada_price) || 0,
           sort_order: Number(form.code) || 100,
         }),
       });
@@ -612,12 +618,18 @@ export function AdminClient({
               <h2 className="flex items-center gap-1.5 text-sm font-bold text-neutral-900">
                 <Plus className="h-4 w-4 text-[#f04e23]" /> เพิ่ม / แก้ไขสินค้า
               </h2>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-4">
                 <input
                   required
                   value={form.code}
                   onChange={(e) => setForm({ ...form, code: e.target.value })}
                   placeholder="เบอร์ เช่น 11"
+                  className="rounded-xl border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-[#f04e23]"
+                />
+                <input
+                  value={form.brand}
+                  onChange={(e) => setForm({ ...form, brand: e.target.value })}
+                  placeholder="แบรนด์ เช่น Seagull, NIVEA"
                   className="rounded-xl border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-[#f04e23]"
                 />
                 <input
@@ -635,18 +647,25 @@ export function AdminClient({
                 placeholder="คำอธิบายสั้นๆ จุดเด่นของสินค้า"
                 className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-[#f04e23]"
               />
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-4">
                 <input
-                  value={form.price_display}
-                  onChange={(e) => setForm({ ...form, price_display: e.target.value })}
-                  placeholder="ราคาแสดงผล เช่น ฿490"
-                  className="rounded-xl border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-[#f04e23]"
+                  type="number"
+                  value={form.shopee_price}
+                  onChange={(e) => setForm({ ...form, shopee_price: e.target.value })}
+                  placeholder="ราคา Shopee (฿)"
+                  className="rounded-xl border border-orange-200 px-3 py-2 text-xs outline-none focus:border-[#f04e23]"
                 />
                 <input
                   type="number"
-                  value={form.price_num}
-                  onChange={(e) => setForm({ ...form, price_num: e.target.value })}
-                  placeholder="ราคาตัวเลข เช่น 490"
+                  value={form.lazada_price}
+                  onChange={(e) => setForm({ ...form, lazada_price: e.target.value })}
+                  placeholder="ราคา Lazada (฿)"
+                  className="rounded-xl border border-indigo-200 px-3 py-2 text-xs outline-none focus:border-[#101d6b]"
+                />
+                <input
+                  value={form.lazada_item_id}
+                  onChange={(e) => setForm({ ...form, lazada_item_id: e.target.value })}
+                  placeholder="Lazada Item ID (ซิงค์ API)"
                   className="rounded-xl border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-[#f04e23]"
                 />
                 <select
@@ -789,10 +808,13 @@ export function AdminClient({
                           onClick={() =>
                             setForm({
                               code: p.code,
+                              brand: p.brand || "",
                               title: p.title,
                               description: p.description,
                               price_display: p.price_display,
                               price_num: String(p.price_num),
+                              shopee_price: p.shopee_price ? String(p.shopee_price) : "",
+                              lazada_price: p.lazada_price ? String(p.lazada_price) : "",
                               sold_text: p.sold_text,
                               rating: p.rating,
                               category: p.category,
@@ -800,6 +822,7 @@ export function AdminClient({
                               image_url: p.image_url,
                               shopee_url: p.shopee_url,
                               lazada_url: p.lazada_url,
+                              lazada_item_id: p.lazada_item_id || "",
                               has_video: p.has_video,
                             })
                           }

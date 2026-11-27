@@ -1,10 +1,13 @@
 export interface Product {
   id?: number;
   code: string;
+  brand: string;
   title: string;
   description: string;
   price_display: string;
   price_num: number;
+  shopee_price: number;
+  lazada_price: number;
   sold_text: string;
   sold_num: number;
   rating: string;

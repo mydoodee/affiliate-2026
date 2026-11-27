@@ -3,11 +3,14 @@ import type { Product, TravelDeal } from "./types";
 export const SEED_PRODUCTS: Product[] = [
   {
     code: "01",
+    brand: "USEE",
     title: "กล้องวงจรปิดใส่ซิม 4G เลนส์คู่ USEE S15-4G (ไม่ต้องมี Wi-Fi)",
     description:
       "ใส่ซิมเน็ตดูสดผ่านมือถือได้ทันที เหมาะติดสวน ไร่นา โกดัง หรือหน้าบ้านที่ไม่มี Wi-Fi กันน้ำ IP67 ภาพสีกลางคืนชัด สั่งหมุนดู 2 มุมพร้อมกัน",
-    price_display: "เริ่มต้น ฿351",
+    price_display: "฿351 – ฿899",
     price_num: 351,
+    shopee_price: 351,
+    lazada_price: 899,
     sold_text: "ขายแล้ว 9,000+",
     sold_num: 9000,
     rating: "4.9",
@@ -26,11 +29,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "02",
+    brand: "ANTIANT",
     title: "เจลกำจัดมด ANTIANT แอนตี้แอนท์ (ร้านแท้)",
     description:
       "หยดเจลไว้ตรงทางเดินมด มดจะคาบกลับไปกินกันทั้งรัง จัดการถึงนางพญา 2–3 วันหายเกลี้ยง ไม่มีกลิ่นฉุนเหมือนสเปรย์",
     price_display: "฿79 – ฿89",
-    price_num: 89,
+    price_num: 79,
+    shopee_price: 89,
+    lazada_price: 79,
     sold_text: "ขายแล้ว 200,000+",
     sold_num: 200000,
     rating: "4.9",
@@ -49,11 +55,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "03",
+    brand: "ZINSANO",
     title: "ZINSANO เครื่องฉีดน้ำแรงดันสูง 80–120 บาร์ AMAZON ULTRA",
     description:
       "ฉีดคราบตะไคร่น้ำหน้าบ้าน ล้างรถ ล้างแอร์ ล้างพื้นโรงรถสะอาดเหมือนใหม่ ตัวเครื่องทนทานแบรนด์ดังสายช่าง รับประกันศูนย์ 1 ปีเต็ม",
     price_display: "฿2,590",
     price_num: 2590,
+    shopee_price: 2590,
+    lazada_price: 2590,
     sold_text: "ขายแล้ว 2,000+",
     sold_num: 2000,
     rating: "4.9",
@@ -72,11 +81,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "04",
+    brand: "NIVEA",
     title: "NIVEA บอดี้ มิลค์ ริช นอร์ริชชิ่ง 500 มล. แพ็กคู่ 2 ขวด",
     description:
       "โลชั่นขวดน้ำเงินในตำนานสำหรับผิวแห้งหน้าหนาวและห้องแอร์ ขวดใหญ่ 500 มล. แพ็กคู่สุดคุ้ม ร้าน Official แท้ 100%",
-    price_display: "฿419",
-    price_num: 419,
+    price_display: "฿359 – ฿419",
+    price_num: 359,
+    shopee_price: 419,
+    lazada_price: 359,
     sold_text: "ขายแล้ว 70,000+",
     sold_num: 70000,
     rating: "4.9",
@@ -95,11 +107,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "05",
+    brand: "Seagull",
     title: "Seagull เครื่องทำน้ำเต้าหู้ 1.2 ลิตร 8 in 1 (สีครีม)",
     description:
       "ปั่นและต้มอัตโนมัติในเครื่องเดียว กดปุ่มเดียวจบ ทำได้ทั้งน้ำเต้าหู้ โจ๊ก ซุปข้าวโพด และน้ำธัญพืช แบรนด์นกนางนวล",
     price_display: "฿1,287 – ฿1,398",
     price_num: 1287,
+    shopee_price: 1287,
+    lazada_price: 1398,
     sold_text: "ขายแล้ว 30,000+",
     sold_num: 30000,
     rating: "4.9",
@@ -118,11 +133,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "06",
+    brand: "Camping Airbed",
     title: "เตียงเป่าลมอัตโนมัติ ที่นอนลมกลางแจ้ง ปั๊มลมไฟฟ้าในตัว",
     description:
       "กดปุ่มเดียวเตียงพองเองในไม่กี่นาที หนา 25–40 ซม. นอนสบายไม่ปวดหลัง เหมาะสำหรับสายแคมป์ปิ้งหน้าหนาวหรือเตียงเสริมรับแขกปีใหม่",
-    price_display: "เริ่มต้น ฿949",
+    price_display: "฿949 – ฿1,218",
     price_num: 949,
+    shopee_price: 949,
+    lazada_price: 1218,
     sold_text: "ขายแล้ว 10,000+",
     sold_num: 10000,
     rating: "4.9",
@@ -141,11 +159,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "07",
+    brand: "HOME-MALL",
     title: "HOME-MALL กล้องวงจรปิดกันน้ำไร้สาย 4K หมุนได้ผ่านแอป Wiodo",
     description:
       "ภาพคมชัดระดับ 4K หมุนดูรอบทิศผ่านมือถือได้ตลอด 24 ชม. ภาพชัดแม้ในที่มืด กันแดดกันฝน เหมาะติดหน้าบ้านและหน้าร้าน",
     price_display: "฿629",
     price_num: 629,
+    shopee_price: 629,
+    lazada_price: 0,
     sold_text: "ขายแล้ว 20,000+",
     sold_num: 20000,
     rating: "4.8",
@@ -164,11 +185,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "08",
+    brand: "Seagull",
     title: "Seagull หม้ออัดแรงดันไฟฟ้า 6 ลิตร (สีดำฝาด้าน)",
     description:
       "ตุ๋นเนื้อ ซี่โครง ขาหมู เปื่อยนุ่มไวกว่าหม้อปกติหลายเท่า ตั้งเวลาแล้วไปทำอย่างอื่นได้ไม่ต้องยืนเฝ้าเตา ความจุใหญ่ 6 ลิตร",
     price_display: "฿2,198",
     price_num: 2198,
+    shopee_price: 2198,
+    lazada_price: 0,
     sold_text: "ขายแล้ว 10,000+",
     sold_num: 10000,
     rating: "4.9",
@@ -187,11 +211,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "09",
+    brand: "Blanc Nature",
     title: "Blanc Nature Pore Removal Serum No.1 เซรั่มกระชับรูขุมขน",
     description:
       "เซรั่ม Niacinamide 15% ตัวดังยอดขายอันดับ 1 ช่วยคุมความมันและกระชับรูขุมขน เนื้อบางเบาซึมไวไม่เหนอะหนะ",
     price_display: "฿590",
     price_num: 590,
+    shopee_price: 590,
+    lazada_price: 0,
     sold_text: "ขายแล้ว 40,000+",
     sold_num: 40000,
     rating: "4.9",
@@ -210,11 +237,14 @@ export const SEED_PRODUCTS: Product[] = [
   },
   {
     code: "10",
+    brand: "BAAM",
     title: "BAAM ISO - SOY (10 LB) โปรตีนจากถั่วเหลือง",
     description:
       "โปรตีนถั่วเหลืองถุงใหญ่จุใจ 10 ปอนด์ เหมาะสำหรับคนแพ้นมวัวหรือกินเวย์แล้วสิวขึ้น ตกช้อนละไม่กี่บาท คุ้มสุดในตลาด",
     price_display: "฿1,930",
     price_num: 1930,
+    shopee_price: 1930,
+    lazada_price: 0,
     sold_text: "ขายแล้ว 20,000+",
     sold_num: 20000,
     rating: "4.9",

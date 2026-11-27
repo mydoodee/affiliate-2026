@@ -93,7 +93,7 @@ async function syncShopeeProducts(
   if (!appId || !appSecret) return { updated: 0, errors: [] };
 
   const products = await sql`
-    SELECT code, shopee_item_id
+    SELECT code, shopee_item_id, COALESCE(lazada_price, 0) AS lazada_price
     FROM products
     WHERE is_active = TRUE AND shopee_item_id <> ''
   `;
@@ -127,12 +127,14 @@ async function syncShopeeProducts(
       if (!node) continue;
 
       const pMin = Math.round(Number(node.priceMin || 0));
-      const pMax = Math.round(Number(node.priceMax || pMin));
+      const lzP = Number(row.lazada_price || 0);
+      const minP = lzP > 0 ? Math.min(pMin, lzP) : pMin;
+      const maxP = lzP > 0 ? Math.max(pMin, lzP) : Math.round(Number(node.priceMax || pMin));
       const priceDisplay =
-        pMin > 0
-          ? pMax > pMin
-            ? `฿${pMin.toLocaleString()} – ฿${pMax.toLocaleString()}`
-            : `฿${pMin.toLocaleString()}`
+        minP > 0
+          ? maxP > minP
+            ? `฿${minP.toLocaleString()} – ฿${maxP.toLocaleString()}`
+            : `฿${minP.toLocaleString()}`
           : "";
       const soldNum = Number(node.sales || 0);
       const soldText = formatSold(soldNum);
@@ -142,7 +144,8 @@ async function syncShopeeProducts(
       if (pMin > 0) {
         await sql`
           UPDATE products
-          SET price_num = ${pMin},
+          SET shopee_price = ${pMin},
+              price_num = ${minP},
               price_display = ${priceDisplay},
               sold_num = CASE WHEN ${soldNum} > 0 THEN ${soldNum} ELSE sold_num END,
               sold_text = CASE WHEN ${soldText} <> '' THEN ${soldText} ELSE sold_text END,
@@ -173,7 +176,7 @@ async function syncLazadaProducts(
   if (!appKey || !appSecret || !userToken) return { updated: 0, errors: [] };
 
   const products = await sql`
-    SELECT code, lazada_item_id, price_num
+    SELECT code, lazada_item_id, price_num, COALESCE(shopee_price, 0) AS shopee_price
     FROM products
     WHERE is_active = TRUE AND lazada_item_id <> ''
   `;
@@ -235,10 +238,10 @@ async function syncLazadaProducts(
       );
       if (discountPrice <= 0) continue;
 
-      // Keep lower price reference if Shopee is also tracked, or display range
-      const currentNum = Number(row.price_num || 0);
-      const minP = currentNum > 0 ? Math.min(currentNum, discountPrice) : discountPrice;
-      const maxP = currentNum > 0 ? Math.max(currentNum, discountPrice) : discountPrice;
+      // Recompute range accurately from shopee_price + live Lazada discountPrice
+      const shP = Number(row.shopee_price || 0);
+      const minP = shP > 0 ? Math.min(shP, discountPrice) : discountPrice;
+      const maxP = shP > 0 ? Math.max(shP, discountPrice) : discountPrice;
       const priceDisplay =
         maxP > minP
           ? `฿${minP.toLocaleString()} – ฿${maxP.toLocaleString()}`
@@ -246,7 +249,8 @@ async function syncLazadaProducts(
 
       await sql`
         UPDATE products
-        SET price_num = ${minP},
+        SET lazada_price = ${discountPrice},
+            price_num = ${minP},
             price_display = ${priceDisplay},
             last_synced_at = NOW(),
             updated_at = NOW()

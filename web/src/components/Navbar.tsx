@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plane, ShieldCheck, ShoppingBag, SlidersHorizontal } from "lucide-react";
+import { Plane, Scale, ShieldCheck, SlidersHorizontal } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/", label: "สินค้าแนะนำ", icon: ShoppingBag },
-    { href: "/travel", label: "เที่ยวปีใหม่ & ประกัน", icon: Plane },
+    { href: "/", label: "เทียบราคา", icon: Scale },
+    { href: "/travel", label: "ดีลเที่ยว", icon: Plane },
   ];
 
   return (
@@ -29,7 +29,7 @@ export function Navbar() {
               <ShieldCheck className="h-4 w-4 text-[#f04e23]" />
             </div>
             <div className="text-[11px] font-medium text-neutral-500">
-              @mybabman • ร้านแท้ 100%
+              เทียบราคา Shopee vs Lazada
             </div>
           </div>
         </Link>
