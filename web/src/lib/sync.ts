@@ -206,6 +206,10 @@ async function syncLazadaProducts(
       method: "GET",
     });
     const json = await res.json();
+    if (json?.code && String(json.code) !== "0") {
+      errors.push(`Lazada API (${json.code}): ${String(json.message ?? "error")}`);
+      return { updated, errors };
+    }
     const list: Array<Record<string, unknown>> =
       json?.result?.data ?? json?.data ?? [];
 
@@ -223,6 +227,9 @@ async function syncLazadaProducts(
     for (const row of products) {
       const match = byId.get(String(row.lazada_item_id).trim());
       if (!match) continue;
+      if (match.outOfStock === true) {
+        errors.push(`Lazada #${row.code} สินค้าหมดชั่วคราว`);
+      }
       const discountPrice = Math.round(
         Number(match.discountPrice ?? match.price ?? 0)
       );
