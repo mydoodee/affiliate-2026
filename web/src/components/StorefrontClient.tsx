@@ -510,7 +510,9 @@ export function StorefrontClient({ products }: { products: Product[] }) {
                       {meta.winner === "single" && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-orange-50/80 px-2.5 py-0.5 text-[11px] font-medium text-neutral-600">
                           <CheckCircle2 className="h-3 w-3 text-[#f04e23]" />
-                          ร้านแท้ Shopee (กำลังเพิ่มลิงก์ Lazada)
+                          {p.shopee_url
+                            ? "ร้านแท้ Shopee (รอเพิ่มลิงก์ Lazada)"
+                            : "ร้านแท้ Lazada • ซิงค์ API สด"}
                         </span>
                       )}
                     </div>
@@ -536,7 +538,13 @@ export function StorefrontClient({ products }: { products: Product[] }) {
                       )}
                     </div>
                     <div className="my-1.5 text-lg font-extrabold tabular-nums text-neutral-900 sm:text-xl">
-                      {meta.sh > 0 ? `฿${meta.sh.toLocaleString()}` : "เช็กราคา"}
+                      {meta.sh > 0 ? (
+                        `฿${meta.sh.toLocaleString()}`
+                      ) : p.shopee_url ? (
+                        "เช็กราคา"
+                      ) : (
+                        <span className="text-xs font-medium text-neutral-400">รอเพิ่มลิงก์</span>
+                      )}
                     </div>
                     {p.shopee_url ? (
                       <a
@@ -549,9 +557,12 @@ export function StorefrontClient({ products }: { products: Product[] }) {
                         <ExternalLink className="h-3 w-3 opacity-85" />
                       </a>
                     ) : (
-                      <span className="inline-flex min-h-[38px] items-center justify-center rounded-lg bg-neutral-100 text-[11px] font-medium text-neutral-400">
-                        ยังไม่มีลิงก์
-                      </span>
+                      <Link
+                        href={`/p/${encodeURIComponent(p.code)}`}
+                        className="inline-flex min-h-[38px] w-full items-center justify-center rounded-lg border border-neutral-200 bg-white px-2.5 py-2 text-[11px] font-semibold text-neutral-500 hover:border-neutral-300"
+                      >
+                        ดูรายละเอียด
+                      </Link>
                     )}
                   </div>
 
