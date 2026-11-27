@@ -332,4 +332,18 @@ export const SEED_TRAVEL_DEALS: TravelDeal[] = [
     clicks: 0,
     sort_order: 7,
   },
+  {
+    code: "T08",
+    title: "Klook — จองบัตรสวนสนุก ทัวร์ JR Pass รถเช่า & กิจกรรมเที่ยว",
+    description:
+      "รวมบัตรเข้าสวนสนุกดัง (Tokyo Disneyland, USJ, ฮ่องกง) รถไฟสนามบิน ทัวร์วันเดย์ทริป และรถเช่าทั่วโลก จองง่ายใช้ QR เข้าได้เลย",
+    category: "บัตรเที่ยว & กิจกรรม",
+    highlight: "สวนสนุก • JR Pass • ทัวร์ทั่วโลก",
+    cta_text: "เช็กดีล Klook",
+    affiliate_url: "https://atth.me/00dzj7002b8u",
+    logo_url: "/logos/klook.png",
+    icon_key: "plane",
+    clicks: 0,
+    sort_order: 3,
+  },
 ];

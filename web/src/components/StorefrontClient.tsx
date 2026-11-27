@@ -108,7 +108,7 @@ export function StorefrontClient({ products }: { products: Product[] }) {
                 ดีลเที่ยวปีใหม่ &amp; ประกันออนไลน์
               </div>
               <p className="mt-0.5 text-xs text-neutral-500">
-                Trip.com · Traveloka · Airalo · MSIG · SCB protect
+                Trip.com · Traveloka · Klook · Airalo · MSIG · SCB
               </p>
             </div>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f04e23] text-white transition-transform group-hover:translate-x-0.5">
