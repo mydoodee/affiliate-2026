@@ -117,11 +117,45 @@ export default async function ProductDetailPage({
               </p>
 
               <div className="mt-5 rounded-2xl border border-orange-100 bg-[#fffaf8] p-4">
-                <div className="text-xs font-medium text-neutral-500">ราคาอ้างอิง</div>
-                <div className="mt-0.5 text-3xl font-bold tabular-nums text-[#f04e23]">
-                  {product.price_display}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-neutral-600">
+                    เทียบราคา 2 เจ้าใหญ่ {product.brand ? `• ${product.brand}` : ""}
+                  </span>
+                  {product.shopee_price > 0 &&
+                    product.lazada_price > 0 &&
+                    product.shopee_price !== product.lazada_price && (
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                        {product.lazada_price < product.shopee_price
+                          ? `Lazada ถูกกว่า ฿${(product.shopee_price - product.lazada_price).toLocaleString()}`
+                          : `Shopee ถูกกว่า ฿${(product.lazada_price - product.shopee_price).toLocaleString()}`}
+                      </span>
+                    )}
                 </div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+
+                <div className="mt-3 grid grid-cols-2 gap-2.5">
+                  <div className="rounded-xl border border-orange-200/80 bg-white p-3">
+                    <div className="text-[11px] font-bold text-[#f04e23]">Shopee</div>
+                    <div className="mt-0.5 text-2xl font-extrabold tabular-nums text-neutral-900">
+                      {product.shopee_price > 0
+                        ? `฿${product.shopee_price.toLocaleString()}`
+                        : product.price_display}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-indigo-200/80 bg-white p-3">
+                    <div className="text-[11px] font-bold text-[#101d6b]">
+                      Lazada {product.lazada_item_id ? "• API สด" : ""}
+                    </div>
+                    <div className="mt-0.5 text-2xl font-extrabold tabular-nums text-neutral-900">
+                      {product.lazada_price > 0
+                        ? `฿${product.lazada_price.toLocaleString()}`
+                        : product.lazada_url
+                        ? "เช็กราคา"
+                        : "—"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
                   <span className="inline-flex items-center gap-1">
                     <ShieldCheck className="h-3.5 w-3.5 text-[#f04e23]" />
                     ลิงก์ตรงร้านทางการ

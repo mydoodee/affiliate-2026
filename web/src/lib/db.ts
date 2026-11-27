@@ -63,6 +63,9 @@ export async function initAndSeedDb(): Promise<{
   await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS shopee_item_id VARCHAR(64) NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS lazada_item_id VARCHAR(64) NOT NULL DEFAULT ''`;
   await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS last_synced_at TIMESTAMPTZ`;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS brand VARCHAR(64) NOT NULL DEFAULT ''`;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS shopee_price INTEGER NOT NULL DEFAULT 0`;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS lazada_price INTEGER NOT NULL DEFAULT 0`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS travel_deals (
@@ -110,16 +113,19 @@ export async function initAndSeedDb(): Promise<{
   for (const p of SEED_PRODUCTS) {
     await sql`
       INSERT INTO products (
-        code, title, description, price_display, price_num, sold_text, sold_num,
-        rating, category, badge, image_url, shopee_url, lazada_url,
+        code, brand, title, description, price_display, price_num, shopee_price, lazada_price,
+        sold_text, sold_num, rating, category, badge, image_url, shopee_url, lazada_url,
         shopee_item_id, lazada_item_id, has_video, sort_order
       ) VALUES (
-        ${p.code}, ${p.title}, ${p.description}, ${p.price_display}, ${p.price_num},
-        ${p.sold_text}, ${p.sold_num}, ${p.rating}, ${p.category}, ${p.badge},
-        ${p.image_url}, ${p.shopee_url}, ${p.lazada_url},
+        ${p.code}, ${p.brand}, ${p.title}, ${p.description}, ${p.price_display}, ${p.price_num},
+        ${p.shopee_price}, ${p.lazada_price}, ${p.sold_text}, ${p.sold_num}, ${p.rating},
+        ${p.category}, ${p.badge}, ${p.image_url}, ${p.shopee_url}, ${p.lazada_url},
         ${p.shopee_item_id ?? ""}, ${p.lazada_item_id ?? ""}, ${p.has_video}, ${p.sort_order}
       )
       ON CONFLICT (code) DO UPDATE SET
+        brand = CASE WHEN products.brand = '' THEN EXCLUDED.brand ELSE products.brand END,
+        shopee_price = CASE WHEN products.shopee_price = 0 THEN EXCLUDED.shopee_price ELSE products.shopee_price END,
+        lazada_price = CASE WHEN products.lazada_price = 0 THEN EXCLUDED.lazada_price ELSE products.lazada_price END,
         shopee_item_id = CASE WHEN products.shopee_item_id = '' THEN EXCLUDED.shopee_item_id ELSE products.shopee_item_id END,
         lazada_item_id = CASE WHEN products.lazada_item_id = '' THEN EXCLUDED.lazada_item_id ELSE products.lazada_item_id END,
         has_video = products.has_video OR EXCLUDED.has_video
@@ -152,8 +158,9 @@ export async function getProducts(): Promise<Product[]> {
   if (!sql) return SEED_PRODUCTS;
   try {
     const rows = await sql`
-      SELECT id, code, title, description, price_display, price_num, sold_text, sold_num,
-             rating, category, badge, image_url, shopee_url, lazada_url,
+      SELECT id, code, COALESCE(brand, '') AS brand, title, description, price_display, price_num,
+             COALESCE(shopee_price, 0) AS shopee_price, COALESCE(lazada_price, 0) AS lazada_price,
+             sold_text, sold_num, rating, category, badge, image_url, shopee_url, lazada_url,
              shopee_item_id, lazada_item_id, has_video,
              clicks_shopee, clicks_lazada, sort_order, is_active, last_synced_at
       FROM products
@@ -173,8 +180,9 @@ export async function getProductByCode(code: string): Promise<Product | null> {
   if (sql) {
     try {
       const rows = await sql`
-        SELECT id, code, title, description, price_display, price_num, sold_text, sold_num,
-               rating, category, badge, image_url, shopee_url, lazada_url,
+        SELECT id, code, COALESCE(brand, '') AS brand, title, description, price_display, price_num,
+               COALESCE(shopee_price, 0) AS shopee_price, COALESCE(lazada_price, 0) AS lazada_price,
+               sold_text, sold_num, rating, category, badge, image_url, shopee_url, lazada_url,
                shopee_item_id, lazada_item_id, has_video,
                clicks_shopee, clicks_lazada, sort_order, is_active, last_synced_at
         FROM products
@@ -261,20 +269,23 @@ export async function upsertProduct(
   if (!sql) throw new Error("ยังไม่ได้เชื่อม Neon PostgreSQL (DATABASE_URL)");
   await sql`
     INSERT INTO products (
-      code, title, description, price_display, price_num, sold_text, sold_num,
-      rating, category, badge, image_url, shopee_url, lazada_url,
+      code, brand, title, description, price_display, price_num, shopee_price, lazada_price,
+      sold_text, sold_num, rating, category, badge, image_url, shopee_url, lazada_url,
       shopee_item_id, lazada_item_id, has_video, sort_order
     ) VALUES (
-      ${p.code}, ${p.title}, ${p.description}, ${p.price_display}, ${p.price_num},
-      ${p.sold_text}, ${p.sold_num}, ${p.rating}, ${p.category}, ${p.badge},
-      ${p.image_url}, ${p.shopee_url}, ${p.lazada_url},
+      ${p.code}, ${p.brand ?? ""}, ${p.title}, ${p.description}, ${p.price_display}, ${p.price_num},
+      ${p.shopee_price ?? 0}, ${p.lazada_price ?? 0}, ${p.sold_text}, ${p.sold_num}, ${p.rating},
+      ${p.category}, ${p.badge}, ${p.image_url}, ${p.shopee_url}, ${p.lazada_url},
       ${p.shopee_item_id ?? ""}, ${p.lazada_item_id ?? ""}, ${p.has_video}, ${p.sort_order}
     )
     ON CONFLICT (code) DO UPDATE SET
+      brand = CASE WHEN EXCLUDED.brand <> '' THEN EXCLUDED.brand ELSE products.brand END,
       title = EXCLUDED.title,
       description = EXCLUDED.description,
       price_display = EXCLUDED.price_display,
       price_num = EXCLUDED.price_num,
+      shopee_price = CASE WHEN EXCLUDED.shopee_price > 0 THEN EXCLUDED.shopee_price ELSE products.shopee_price END,
+      lazada_price = CASE WHEN EXCLUDED.lazada_price > 0 THEN EXCLUDED.lazada_price ELSE products.lazada_price END,
       sold_text = EXCLUDED.sold_text,
       sold_num = EXCLUDED.sold_num,
       rating = EXCLUDED.rating,

@@ -22,12 +22,26 @@ export async function POST(req: NextRequest) {
     let count = 0;
     for (const raw of items) {
       if (!raw?.code || !raw?.title) continue;
+      const shPrice = Number(raw.shopee_price) || 0;
+      const lzPrice = Number(raw.lazada_price) || 0;
+      const nums = [shPrice, lzPrice].filter((n) => n > 0);
+      const computedMin = nums.length ? Math.min(...nums) : Number(raw.price_num) || 0;
+      const computedMax = nums.length ? Math.max(...nums) : computedMin;
+      const autoDisplay =
+        computedMin > 0
+          ? computedMax > computedMin
+            ? `฿${computedMin.toLocaleString()} – ฿${computedMax.toLocaleString()}`
+            : `฿${computedMin.toLocaleString()}`
+          : "";
       await upsertProduct({
         code: String(raw.code).trim(),
+        brand: String(raw.brand || "").trim(),
         title: String(raw.title).trim(),
         description: String(raw.description || "").trim(),
-        price_display: String(raw.price_display || `฿${raw.price_num || 0}`).trim(),
-        price_num: Number(raw.price_num) || 0,
+        price_display: String(raw.price_display || autoDisplay || `฿${computedMin}`).trim(),
+        price_num: computedMin,
+        shopee_price: shPrice,
+        lazada_price: lzPrice,
         sold_text: String(raw.sold_text || "").trim(),
         sold_num: Number(raw.sold_num) || 0,
         rating: String(raw.rating || "4.9").trim(),
@@ -36,6 +50,8 @@ export async function POST(req: NextRequest) {
         image_url: String(raw.image_url || "").trim(),
         shopee_url: String(raw.shopee_url || "").trim(),
         lazada_url: String(raw.lazada_url || "").trim(),
+        shopee_item_id: String(raw.shopee_item_id || "").trim(),
+        lazada_item_id: String(raw.lazada_item_id || "").trim(),
         has_video: Boolean(raw.has_video),
         sort_order: Number(raw.sort_order) || 100,
       });
