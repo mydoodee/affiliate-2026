@@ -336,13 +336,15 @@ export function StorefrontClient({ products }: { products: Product[] }) {
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
+              id="product-search"
+              name="q"
               type="search"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
                 setVisibleCount(PAGE_SIZE);
               }}
-              placeholder="ค้นหาแบรนด์ ชื่อรุ่น หรือเบอร์ เช่น Seagull, NIVEA, 04..."
+              placeholder="ค้นหาแบรนด์หรือรุ่น เช่น Seagull, NIVEA"
               className="w-full rounded-2xl border border-neutral-200 bg-white py-2.5 pl-10 pr-4 text-sm text-neutral-900 shadow-xs outline-none transition-all placeholder:text-neutral-400 focus:border-[#f04e23] focus:ring-4 focus:ring-orange-500/10"
             />
           </div>
@@ -353,6 +355,8 @@ export function StorefrontClient({ products }: { products: Product[] }) {
               {filtered.length} รุ่น
             </span>
             <select
+              id="product-sort"
+              name="sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               aria-label="เรียงลำดับสินค้า"
