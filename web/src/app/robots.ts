@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/", "/travel", "/p/"],
-        disallow: ["/admin", "/api/", "/go/"],
+        disallow: ["/api/", "/go/"],
       },
     ],
     sitemap: "https://app.growkub.com/sitemap.xml",

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
 export function Footer() {
@@ -58,9 +57,6 @@ export function Footer() {
             >
               TikTok @mybabman
             </a>
-            <Link href="/admin" className="font-medium text-neutral-500 hover:text-[#f04e23]">
-              Admin
-            </Link>
           </div>
         </div>
       </div>
