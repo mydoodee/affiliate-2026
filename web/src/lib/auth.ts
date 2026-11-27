@@ -15,7 +15,7 @@ export function verifyCredentials(username: string, password: string): boolean {
   const expectedUser = (process.env.ADMIN_USERNAME || "admin").trim();
   const expectedPass = (process.env.ADMIN_PASSWORD || "").trim();
   if (!expectedPass) return false;
-  return username.trim() === expectedUser && password === expectedPass;
+  return username.trim() === expectedUser && password.trim() === expectedPass;
 }
 
 export function signSessionToken(username: string): string {
