@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Trash2,
   Upload,
+  Download,
   Zap,
 } from "lucide-react";
 import type { ClickStats, Product, SyncStatusInfo, TravelDeal } from "@/lib/types";
@@ -386,9 +387,13 @@ export function AdminClient({
   async function handleCsvUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const text = await file.text();
+    e.target.value = "";
+    const text = (await file.text()).replace(/^\uFEFF/, "");
     const lines = text.split(/\r?\n/).filter((l) => l.trim());
-    if (lines.length < 2) return;
+    if (lines.length < 2) {
+      setStatusMsg("ไฟล์ CSV ต้องมีแถวหัวตาราง + ข้อมูลอย่างน้อย 1 แถว");
+      return;
+    }
 
     const parseRow = (row: string) => {
       const cols: string[] = [];
@@ -396,8 +401,12 @@ export function AdminClient({
       let inQuote = false;
       for (let i = 0; i < row.length; i++) {
         const ch = row[i];
-        if (ch === '"') inQuote = !inQuote;
-        else if (ch === "," && !inQuote) {
+        if (ch === '"') {
+          if (inQuote && row[i + 1] === '"') {
+            cur += '"';
+            i++;
+          } else inQuote = !inQuote;
+        } else if (ch === "," && !inQuote) {
           cols.push(cur.trim());
           cur = "";
         } else cur += ch;
@@ -406,44 +415,122 @@ export function AdminClient({
       return cols;
     };
 
-    const headers = parseRow(lines[0]).map((h) => h.toLowerCase());
-    const idx = (names: string[]) =>
-      headers.findIndex((h) => names.some((n) => h.includes(n)));
+    const headers = parseRow(lines[0]).map((h) => h.toLowerCase().trim());
+    const col = (exact: string[], loose: string[] = []) => {
+      let i = headers.findIndex((h) => exact.includes(h));
+      if (i < 0 && loose.length) i = headers.findIndex((h) => loose.some((n) => h.includes(n)));
+      return i;
+    };
 
-    const iCode = idx(["code", "rank", "slot"]);
-    const iTitle = idx(["product_name", "title", "name"]);
-    const iPrice = idx(["price"]);
-    const iSold = idx(["sold"]);
-    const iRating = idx(["rating"]);
-    const iShopee = idx(["affiliate_short_link", "shopee"]);
-    const iLazada = idx(["lazada"]);
-    const iImg = idx(["image"]);
+    const iCode = col(["code", "slot", "rank", "เบอร์"]);
+    const iBrand = col(["brand", "แบรนด์"]);
+    const iTitle = col(["title", "product_name", "name", "ชื่อสินค้า"], ["product_name"]);
+    const iDesc = col(["description", "รายละเอียด"]);
+    const iShopeeUrl = col(
+      ["shopee_url", "shopee_link", "affiliate_short_link", "short_link", "ลิงก์ shopee"],
+      ["short_link"]
+    );
+    const iShopeePrice = col(["shopee_price", "ราคา shopee"]);
+    const iShopeeId = col(["shopee_item_id", "item_id", "itemid"]);
+    const iLazadaUrl = col(["lazada_url", "lazada_link"]);
+    const iLazadaPrice = col(["lazada_price", "ราคา lazada"]);
+    const iLazadaId = col(["lazada_item_id"]);
+    const iPrice = col(["price", "price_num", "ราคา"]);
+    const iSold = col(["sold", "sold_text", "ยอดขาย"]);
+    const iRating = col(["rating", "คะแนน"]);
+    const iImg = col(["image_url", "image", "รูป"]);
+    const iCategory = col(["category", "หมวด"]);
 
-    const items = lines.slice(1).map((line, n) => {
+    const get = (c: string[], i: number) => (i >= 0 ? (c[i] ?? "").trim() : "");
+    const num = (s: string) => Number(s.replace(/[^0-9.]/g, "")) || 0;
+    const isAffiliateShopee = (u: string) =>
+      /^https?:\/\/(s\.shopee\.co\.th|shope\.ee)\//i.test(u);
+
+    const byCode = new Map(products.map((p) => [p.code, p]));
+    let maxCode = products.reduce((mx, p) => {
+      const n = Number(p.code);
+      return Number.isFinite(n) && n > mx ? n : mx;
+    }, 0);
+
+    const invalidLinks: string[] = [];
+    let unchanged = 0;
+    const items: Array<Record<string, unknown>> = [];
+
+    for (const line of lines.slice(1)) {
       const c = parseRow(line);
-      const rawCode = (iCode >= 0 ? c[iCode] : String(n + 1))
-        .replace("#", "")
-        .padStart(2, "0");
-      const priceNum =
-        Number((iPrice >= 0 ? c[iPrice] : "0").replace(/[^0-9.]/g, "")) || 0;
-      return {
-        code: rawCode,
-        title: iTitle >= 0 ? c[iTitle] : `สินค้า #${rawCode}`,
-        description: "",
-        price_display: priceNum > 0 ? `฿${priceNum.toLocaleString()}` : "",
-        price_num: priceNum,
-        sold_text: iSold >= 0 && c[iSold] ? `ขายแล้ว ${c[iSold]}` : "",
-        sold_num: 0,
-        rating: iRating >= 0 && c[iRating] ? c[iRating] : "4.9",
-        category: "home",
-        badge: "นำเข้า CSV",
-        image_url: iImg >= 0 ? c[iImg] : "",
-        shopee_url: iShopee >= 0 ? c[iShopee] : "",
-        lazada_url: iLazada >= 0 ? c[iLazada] : "",
-        has_video: false,
-        sort_order: n + 1,
-      };
-    });
+      let code = get(c, iCode).replace("#", "");
+      if (code && /^\d+$/.test(code)) code = code.padStart(2, "0");
+      const existing = code ? byCode.get(code) : undefined;
+
+      const shopeeUrl = get(c, iShopeeUrl);
+      if (shopeeUrl && !isAffiliateShopee(shopeeUrl)) {
+        invalidLinks.push(code ? `#${code}` : get(c, iTitle).slice(0, 20));
+        continue;
+      }
+
+      const hasNewData = [
+        shopeeUrl,
+        get(c, iShopeePrice),
+        get(c, iLazadaUrl),
+        get(c, iLazadaPrice),
+        get(c, iImg),
+        get(c, iPrice),
+      ].some(Boolean);
+
+      if (existing && !hasNewData) {
+        unchanged++;
+        continue;
+      }
+      if (!existing && !get(c, iTitle)) continue;
+
+      if (!code) {
+        maxCode += 1;
+        code = String(maxCode).padStart(2, "0");
+      }
+
+      const soldRaw = get(c, iSold);
+      const shopeePrice =
+        num(get(c, iShopeePrice)) ||
+        (iShopeePrice < 0 && shopeeUrl ? num(get(c, iPrice)) : 0) ||
+        existing?.shopee_price ||
+        0;
+
+      items.push({
+        code,
+        brand: get(c, iBrand) || existing?.brand || "",
+        title: get(c, iTitle) || existing?.title || `สินค้า #${code}`,
+        description: get(c, iDesc) || existing?.description || "",
+        price_display: "",
+        price_num: num(get(c, iPrice)) || existing?.price_num || 0,
+        shopee_price: shopeePrice,
+        lazada_price: num(get(c, iLazadaPrice)) || existing?.lazada_price || 0,
+        sold_text: soldRaw
+          ? soldRaw.startsWith("ขาย")
+            ? soldRaw
+            : `ขายแล้ว ${soldRaw}`
+          : existing?.sold_text || "",
+        sold_num: existing?.sold_num || 0,
+        rating: get(c, iRating) || existing?.rating || "4.9",
+        category: get(c, iCategory) || existing?.category || "home",
+        badge: existing?.badge || "นำเข้า CSV",
+        image_url: get(c, iImg) || existing?.image_url || "",
+        shopee_url: shopeeUrl || existing?.shopee_url || "",
+        lazada_url: get(c, iLazadaUrl) || existing?.lazada_url || "",
+        shopee_item_id: get(c, iShopeeId) || existing?.shopee_item_id || "",
+        lazada_item_id: get(c, iLazadaId) || existing?.lazada_item_id || "",
+        has_video: existing?.has_video || false,
+        sort_order: existing?.sort_order || Number(code) || 100,
+      });
+    }
+
+    if (!items.length) {
+      setStatusMsg(
+        `ไม่มีรายการให้อัปเดต${unchanged ? ` (ข้าม ${unchanged} แถวที่ยังไม่กรอกลิงก์)` : ""}${
+          invalidLinks.length ? ` • ลิงก์ไม่ใช่ s.shopee.co.th: ${invalidLinks.join(", ")}` : ""
+        }`
+      );
+      return;
+    }
 
     setLoading(true);
     try {
@@ -455,7 +542,13 @@ export function AdminClient({
       const data = await res.json();
       setStatusMsg(
         data.ok
-          ? `นำเข้าจาก CSV สำเร็จ ${data.saved} รายการ`
+          ? `นำเข้าจาก CSV สำเร็จ ${data.saved} รายการ${
+              unchanged ? ` • ข้าม ${unchanged} แถวที่ยังไม่กรอก` : ""
+            }${
+              invalidLinks.length
+                ? ` • ไม่รับลิงก์ที่ไม่ใช่ s.shopee.co.th: ${invalidLinks.join(", ")}`
+                : ""
+            }`
           : `ผิดพลาด: ${data.message}`
       );
       if (data.ok) {
@@ -466,6 +559,25 @@ export function AdminClient({
     } finally {
       setLoading(false);
     }
+  }
+
+  function downloadShopeeTodoCsv() {
+    const todo = products.filter((p) => !p.shopee_url);
+    const esc = (v: string | number | undefined) =>
+      `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const header = "code,brand,title,lazada_price,shopee_url,shopee_price,shopee_item_id";
+    const rows = todo.map((p) =>
+      [p.code, p.brand, p.title, p.lazada_price, "", "", ""].map(esc).join(",")
+    );
+    const blob = new Blob(["\uFEFF" + [header, ...rows].join("\n")], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `shopee_link_todo_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   async function removeProduct(code: string) {
@@ -874,7 +986,8 @@ export function AdminClient({
                   <Upload className="h-4 w-4 text-[#f04e23]" /> นำเข้าทีละเยอะๆ (CSV)
                 </h2>
                 <p className="mt-2 text-xs leading-relaxed text-neutral-500">
-                  อัปโหลดไฟล์ CSV จาก Shopee/Lazada เพื่อนำเข้าสินค้าเข้า Neon PostgreSQL ทีละร้อย/พันรายการ
+                  รองรับคอลัมน์ <code className="rounded bg-neutral-100 px-1">code, brand, title, shopee_url, shopee_price, shopee_item_id, lazada_price, lazada_item_id, category</code>{" "}
+                  — ถ้า <code className="rounded bg-neutral-100 px-1">code</code> ตรงกับสินค้าเดิม ระบบจะเติมเฉพาะช่องที่กรอก (ไม่ทับข้อมูลเดิม) และรับเฉพาะลิงก์ <code className="rounded bg-neutral-100 px-1">s.shopee.co.th</code>
                 </p>
                 <label className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-orange-200 bg-[#fffaf8] p-6 text-center hover:bg-[#fff4f0]">
                   <Upload className="h-6 w-6 text-[#f04e23]" />
@@ -884,9 +997,43 @@ export function AdminClient({
                   <input type="file" accept=".csv" onChange={handleCsvUpload} className="hidden" />
                 </label>
               </div>
-              <p className="mt-4 text-[11px] text-neutral-400">
-                เคล็ดลับ: กดปุ่มดินสอในตารางด้านล่างเพื่อดึงสินค้าเดิมมาแก้รูปหรือลิงก์ได้ทันที
-              </p>
+              {/* Assisted Mode: Shopee link to-do list */}
+              {(() => {
+                const todo = products.filter((p) => !p.shopee_url);
+                return (
+                  <div className="mt-4 rounded-2xl border border-orange-100 bg-[#fffaf8] p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-neutral-800">
+                        รอเพิ่มลิงก์ Shopee: {todo.length} รายการ
+                      </span>
+                      {todo.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={downloadShopeeTodoCsv}
+                          className="inline-flex items-center gap-1 rounded-lg border border-orange-200 bg-white px-2 py-1 text-[11px] font-semibold text-[#f04e23] hover:bg-orange-50 cursor-pointer"
+                        >
+                          <Download className="h-3 w-3" />
+                          โหลด CSV
+                        </button>
+                      )}
+                    </div>
+                    {todo.length > 0 ? (
+                      <ul className="mt-2 max-h-28 space-y-0.5 overflow-y-auto text-[11px] text-neutral-500">
+                        {todo.map((p) => (
+                          <li key={p.code} className="truncate">
+                            #{p.code} {p.brand ? `[${p.brand}] ` : ""}
+                            {p.title}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mt-1 text-[11px] text-emerald-700">
+                        ครบแล้ว ทุกสินค้ามีลิงก์ Shopee
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
